@@ -1,0 +1,15 @@
+
+*.ipch
+*.db-wal
+*.opendb
+*.db
+*.db-shm
+.vs/OnlyFortress/v16/.suo
+*.obj
+*.tlog
+*.txt
+*.log
+*.pdb
+*.idb
+*.dll
+*.ilk
