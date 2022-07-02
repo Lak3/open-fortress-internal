@@ -11,13 +11,115 @@ void CFeatures_ESP::Render()
 
 	int n, x, y, w, h;
 
-	const int nMaxClients = (I::EngineClient->GetMaxClients() + 1);
-	const int nLocalIndex = I::EngineClient->GetLocalPlayer();
+	const int nMaxClients  = (I::EngineClient->GetMaxClients() + 1);
+	const int nMaxEntities = I::ClientEntityList->GetMaxEntities();
+	const int nLocalIndex  = I::EngineClient->GetLocalPlayer();
 
 	C_TFPlayer* pLocal = I::ClientEntityList->GetClientEntity(nLocalIndex)->As<C_TFPlayer*>();
 
 	if (!pLocal)
 		return;
+
+	Rect_t s;
+	for (n = nMaxClients; n < nMaxEntities; n++)
+	{
+		C_BaseEntity* pEntity = C_BaseEntity::Instance(n);
+
+		if (!pEntity || pEntity->IsDormant())
+			continue;
+
+		ClientClass* pCC = pEntity->GetClientClass();
+
+		if (!pCC)
+			continue;
+
+		switch (pCC->m_ClassID)
+		{
+			case CTFAmmoPack:
+			{
+				if (!H::Draw.WorldPosToScreenPos(pEntity->WorldSpaceCenter(), s))
+					break;
+
+				H::Draw.String(EFonts::PICKUPS, s.x, s.y, COLOR_GREY, TXT_CENTERXY, L"ammo");
+
+				break;
+			}
+			case CCondPowerup:
+			{
+				C_CondPowerup* pPowerup = pEntity->As<C_CondPowerup*>();
+
+				if (!pPowerup || !H::Draw.WorldPosToScreenPos(pPowerup->WorldSpaceCenter(), s))
+					break;
+
+				const int nModelIndex = pPowerup->m_nModelIndex();
+
+				if (m_mapPowerups.find(nModelIndex) == m_mapPowerups.end())
+					break;
+
+				H::Draw.String(EFonts::PICKUPS, s.x, s.y, COLOR_YELLOW, TXT_CENTERXY, m_mapPowerups[nModelIndex]);
+				s.y += H::Draw.GetFontHeight(EFonts::PICKUPS);
+
+				if (pPowerup->m_bRespawning())
+				{
+					const float flRespawn = (pPowerup->m_flRespawnTick() - I::GlobalVarsBase->curtime);
+
+					H::Draw.String(EFonts::PICKUPS, s.x, s.y, COLOR_YELLOW, TXT_CENTERXY, L"%.1f", flRespawn);
+					s.y += H::Draw.GetFontHeight(EFonts::PICKUPS);
+				}
+
+				break;
+			}
+			case CWeaponSpawner:
+			{
+				C_WeaponSpawner* pSpawn = pEntity->As<C_WeaponSpawner*>();
+
+				if (!pSpawn || !H::Draw.WorldPosToScreenPos(pSpawn->WorldSpaceCenter(), s))
+					break;
+
+				const Color clrRender = pSpawn->m_bSuperWeapon() ? COLOR_YELLOW : COLOR_GREY;
+
+				char szArray[64];
+				pSpawn->GetWeaponName(szArray);
+
+				std::string szWeapon = (szArray + 10);
+				std::transform(szWeapon.begin(), szWeapon.end(), szWeapon.begin(),
+					[](unsigned char c) { return ::tolower(c); });
+
+				H::Draw.String(EFonts::PICKUPS, s.x, s.y, clrRender, TXT_CENTERXY, szWeapon.c_str());
+				s.y += H::Draw.GetFontHeight(EFonts::PICKUPS);
+
+				if (pSpawn->m_bRespawning())
+				{
+					const float flRespawn = (pSpawn->m_flRespawnTick() - I::GlobalVarsBase->curtime);
+
+					H::Draw.String(EFonts::PICKUPS, s.x, s.y, clrRender, TXT_CENTERXY, L"%.1fs", flRespawn);
+					s.y += H::Draw.GetFontHeight(EFonts::PICKUPS);
+				}
+
+				break;
+			}
+			case CBaseAnimating:
+			{
+				const int nModelIndex = pEntity->m_nModelIndex();
+
+				if (IsAmmo(nModelIndex) && H::Draw.WorldPosToScreenPos(pEntity->WorldSpaceCenter(), s))
+				{
+					H::Draw.String(EFonts::PICKUPS, s.x, s.y, COLOR_GREY, TXT_CENTERXY, L"ammo");
+					break;
+				}
+
+				if (IsHealth(nModelIndex) && H::Draw.WorldPosToScreenPos(pEntity->WorldSpaceCenter(), s))
+				{
+					H::Draw.String(EFonts::PICKUPS, s.x, s.y, COLOR_GREEN, TXT_CENTERXY, L"health");
+					break;
+				}
+
+				break;
+			}
+			default:
+				break;
+		}
+	}
 
 	player_info_t pi;
 	for (n = 1; n < nMaxClients; n++)
@@ -25,7 +127,7 @@ void CFeatures_ESP::Render()
 		if (n == nLocalIndex)
 			continue;
 
-		IClientEntity* pEntity = I::ClientEntityList->GetClientEntity(n);
+		C_BaseEntity* pEntity = C_BaseEntity::Instance(n);
 
 		if (!pEntity || pEntity->IsDormant())
 			continue;
@@ -55,10 +157,10 @@ void CFeatures_ESP::Render()
 			H::Draw.OutlinedRect(x, y, w, h, clrRender);
 
 			//Outline
-			H::Draw.OutlinedRect(x - 1, y - 1, w + 2, h + 2, { 1, 1, 1, 255 });
+			H::Draw.OutlinedRect(x - 1, y - 1, w + 2, h + 2, COLOR_BLACK);
 
 			//Inline
-			H::Draw.OutlinedRect(x + 1, y + 1, w - 2, h - 2, { 1, 1, 1, 255 });
+			H::Draw.OutlinedRect(x + 1, y + 1, w - 2, h - 2, COLOR_BLACK);
 		}
 
 		if (I::EngineClient->GetPlayerInfo(n, &pi))
@@ -82,9 +184,33 @@ void CFeatures_ESP::Render()
 
 		//if (conditions)
 		{
-			if (pPlayer->m_nPlayerCondEx4() & 0x1)
+			if (pPlayer->InCondUber())
 			{
-				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, { 230, 255, 110, 255 }, TXT_DEFAULT, L"PROTECTED");
+				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, COLOR_YELLOW, TXT_DEFAULT, L"INVULNERABLE");
+				nDrawY += H::Draw.GetFontHeight(EFonts::ESP);
+			}
+
+			if (pPlayer->InCondCrit())
+			{
+				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, COLOR_YELLOW, TXT_DEFAULT, L"CRITS");
+				nDrawY += H::Draw.GetFontHeight(EFonts::ESP);
+			}
+
+			if (pPlayer->InCondBerserk())
+			{
+				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, COLOR_YELLOW, TXT_DEFAULT, L"BERSERK");
+				nDrawY += H::Draw.GetFontHeight(EFonts::ESP);
+			}
+
+			if (pPlayer->InCondHaste())
+			{
+				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, COLOR_YELLOW, TXT_DEFAULT, L"HASTE");
+				nDrawY += H::Draw.GetFontHeight(EFonts::ESP);
+			}
+
+			if (pPlayer->InCondShield())
+			{
+				H::Draw.String(EFonts::ESP, nDrawX, nDrawY, COLOR_YELLOW, TXT_DEFAULT, L"SHIELD");
 				nDrawY += H::Draw.GetFontHeight(EFonts::ESP);
 			}
 		}
@@ -104,7 +230,7 @@ void CFeatures_ESP::Render()
 				H::Draw.String(EFonts::ESP_WEAPON,
 					x + (w / 2),
 					y + (h + 2),
-					{ 191, 191, 191, 255 },
+					COLOR_GREY,
 					TXT_CENTERX,
 					szWeapon.c_str());
 			}
@@ -123,11 +249,63 @@ void CFeatures_ESP::Render()
 
 			const float ratio = (flHealth / flMaxHealth);
 			H::Draw.Rect(static_cast<int>(((x - nWidth) - 2)), static_cast<int>((y + nHeight - (nHeight * ratio))), nWidth, static_cast<int>((nHeight * ratio)), clrHealth);
-			H::Draw.OutlinedRect(static_cast<int>(((x - nWidth) - 2) - 1), static_cast<int>((y + nHeight - (nHeight * ratio)) - 1), nWidth + 2, static_cast<int>((nHeight * ratio) + 1), { 1, 1, 1, 255 });
+			H::Draw.OutlinedRect(static_cast<int>(((x - nWidth) - 2) - 1), static_cast<int>((y + nHeight - (nHeight * ratio)) - 1), nWidth + 2, static_cast<int>((nHeight * ratio) + 1), COLOR_BLACK);
 
 			x += 1;
 		}
 	}
+}
+
+void CFeatures_ESP::LevelInitPostEntity()
+{
+	m_vecAmmo.clear();
+	{
+		m_vecAmmo.push_back(I::ModelInfoClient->GetModelIndex("models/items/ammopack_large.mdl"));
+		m_vecAmmo.push_back(I::ModelInfoClient->GetModelIndex("models/items/ammopack_medium.mdl"));
+		m_vecAmmo.push_back(I::ModelInfoClient->GetModelIndex("models/items/ammopack_small.mdl"));
+	}
+
+	m_vecHealth.clear();
+	{
+		m_vecHealth.push_back(I::ModelInfoClient->GetModelIndex("models/items/medkit_large.mdl"));
+		m_vecHealth.push_back(I::ModelInfoClient->GetModelIndex("models/items/medkit_medium.mdl"));
+		m_vecHealth.push_back(I::ModelInfoClient->GetModelIndex("models/items/medkit_small.mdl"));
+		m_vecHealth.push_back(I::ModelInfoClient->GetModelIndex("models/items/medkit_overheal.mdl"));
+	}
+
+	m_mapPowerups.clear();
+	{
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_crit.mdl"), L"POWERUP_CRIT");
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_invis.mdl"), L"POWERUP_INVIS");
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_defense.mdl"), L"POWERUP_SHIELD");
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_knockout.mdl"), L"POWERUP_BERSERK");
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_haste.mdl"), L"POWERUP_HASTE");
+		m_mapPowerups.emplace(I::ModelInfoClient->GetModelIndex("models/pickups/pickup_powerup_megahealth.mdl"), L"POWERUP_MEGAHEALTH");
+	}
+}
+
+bool CFeatures_ESP::IsAmmo(const int nModelIndex)
+{
+	size_t n; const size_t nMax = m_vecAmmo.size();
+	for (n = 0; n < nMax; n++)
+	{
+		if (m_vecAmmo[n] == nModelIndex)
+			return true;
+	}
+
+	return false;
+}
+
+bool CFeatures_ESP::IsHealth(const int nModelIndex)
+{
+	size_t n; const size_t nMax = m_vecHealth.size();
+	for (n = 0; n < nMax; n++)
+	{
+		if (m_vecHealth[n] == nModelIndex)
+			return true;
+	}
+
+	return false;
 }
 
 bool CFeatures_ESP::GetDynamicBounds(C_BaseEntity* pEntity, int& x, int& y, int& w, int& h)

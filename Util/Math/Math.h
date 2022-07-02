@@ -40,6 +40,7 @@ public:
 	float NormalizeAngle(const float ang);
 
 	Vector GetAngleToPosition(const Vector vFrom, const Vector vTo);
+	Vector VelocityToAngles(const Vector direction);
 
 public:
 	template<typename T>

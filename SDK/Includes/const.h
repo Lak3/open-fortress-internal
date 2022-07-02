@@ -55,6 +55,14 @@
 #define	FL_INWATER (1<<9)
 #define PLAYER_FLAG_BITS 10
 
+#define COLOR_RED		Color(255, 64, 64, 255)
+#define COLOR_BLUE		Color(153, 204, 255, 255)
+#define COLOR_YELLOW	Color(255, 178, 0, 255)
+#define COLOR_GREEN		Color(153, 255, 153, 255)
+#define COLOR_GREY		Color(204, 204, 204, 255)
+#define COLOR_WHITE		Color(255, 255, 255, 255)
+#define COLOR_BLACK		Color(0, 0, 0, 255)
+
 enum MoveType_t
 {
 	MOVETYPE_NONE = 0,
@@ -72,6 +80,26 @@ enum MoveType_t
 	MOVETYPE_LAST = MOVETYPE_CUSTOM,
 	MOVETYPE_MAX_BITS = 4
 };
+
+typedef enum {
+	EMPTY,
+	SINGLE,
+	SINGLE_NPC,
+	WPN_DOUBLE, // Can't be "DOUBLE" because windows.h uses it.
+	DOUBLE_NPC,
+	BURST,
+	RELOAD,
+	RELOAD_NPC,
+	MELEE_MISS,
+	MELEE_HIT,
+	MELEE_HIT_WORLD,
+	SPECIAL1,
+	SPECIAL2,
+	SPECIAL3,
+	TAUNT,
+	DEPLOY,
+	NUM_SHOOT_SOUND_TYPES
+} WeaponSound_t;
 
 enum MoveCollide_t
 {

@@ -198,3 +198,35 @@ Vector CUtil_Math::GetAngleToPosition(const Vector vFrom, const Vector vTo)
 
 	return { (::atanf(vDelta.z / flHyp) * M_RADPI), (::atanf(vDelta.y / vDelta.x) * M_RADPI) + (180.0f * (vDelta.x >= 0.0f)), 0.0f };
 }
+
+Vector CUtil_Math::VelocityToAngles(const Vector direction)
+{
+	auto Magnitude = [&](const Vector& v) -> float {
+		return sqrtf(v.Dot(v));
+	};
+
+	float yaw, pitch;
+
+	if (direction.y == 0.0f && direction.x == 0.0f)
+	{
+		yaw = 0.0f;
+
+		if (direction.z > 0.0f)
+			pitch = 270.0f;
+		else
+			pitch = 90.0f;
+	}
+	else
+	{
+		yaw = RAD2DEG(::atan2f(direction.y, direction.x));
+		pitch = RAD2DEG(::atan2f(-direction.z, Magnitude(Vector(direction))));
+
+		if (yaw < 0.0f)
+			yaw += 360.0f;
+
+		if (pitch < 0.0f)
+			pitch += 360.0f;
+	}
+
+	return { pitch, yaw, 0.0f };
+}

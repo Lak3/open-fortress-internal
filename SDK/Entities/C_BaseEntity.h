@@ -236,6 +236,21 @@ private:
 	virtual void* GetItemTintColorOwner(void) = 0;
 
 public:
+	static void SetPredictionRandomSeed(const CUserCmd* cmd) {
+		reinterpret_cast<void(*)(const CUserCmd*)>(U::Offsets.m_dwC_BaseEntity_SetPredictionRandomSeed)(cmd);
+	}
+
+	static void SetPredictionPlayer(C_BasePlayer* player) {
+		static const DWORD s_dwOff = (reinterpret_cast<DWORD>(GetModuleHandleW(L"client.dll")) + 0x105C1F18); //Epic hardcoded shit
+
+		*reinterpret_cast<C_BasePlayer**>(s_dwOff) = player;
+	}
+
+	static C_BaseEntity* Instance(const int iEnt) {
+		return reinterpret_cast<C_BaseEntity* (*)(int)>(U::Offsets.m_dwC_BaseEntity_Instance)(iEnt);
+	}
+
+public:
 	NETVAR(m_flAnimTime, int, "CBaseEntity", "m_flAnimTime");
 	NETVAR(m_flSimulationTime, int, "CBaseEntity", "m_flSimulationTime");
 	NETVAR(m_ubInterpolationFrame, int, "CBaseEntity", "m_ubInterpolationFrame");

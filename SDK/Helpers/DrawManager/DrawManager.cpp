@@ -14,6 +14,7 @@ void CHelpers_DrawManager::Initialize()
 	m_Fonts[EFonts::MENU_VERDANA]  = { "Verdana",   12, FW_DONTCARE, EFontFlags::FONTFLAG_OUTLINE };
 	m_Fonts[EFonts::MENU_ARIAL]    = { "Arial",     12, FW_DONTCARE, EFontFlags::FONTFLAG_OUTLINE };
 	m_Fonts[EFonts::MENU_TAB]      = { "Verdana",   30, FW_HEAVY   , EFontFlags::FONTFLAG_OUTLINE | EFontFlags::FONTFLAG_ANTIALIAS };
+	m_Fonts[EFonts::PICKUPS]       = { "Verdana",   14, 400        , EFontFlags::FONTFLAG_DROPSHADOW | EFontFlags::FONTFLAG_ANTIALIAS };
 
 	for (std::pair<const EFonts, CFont>& f : m_Fonts)
 		I::MatSystemSurface->SetFontGlyphSet(f.second.m_hFont = I::MatSystemSurface->CreateFont(), f.second.m_szName, f.second.m_nTall, f.second.m_nWeight, 0, 0, f.second.m_nFlags, 0, 0);
@@ -209,7 +210,7 @@ int CHelpers_DrawManager::GetFontHeight(const EFonts& font) const
 
 void CHelpers_DrawManager::Triangle(Vector2D* v, const Color clr)
 {
-	static int s_nTexture = I::MatSystemSurface->CreateNewTextureID(true);
+	static const int s_nTexture = I::MatSystemSurface->CreateNewTextureID(true);
 
 	Vertex_t Vertices[3] = { { v[0] }, { v[1] }, { v[2] } };
 

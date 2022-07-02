@@ -18,6 +18,12 @@ namespace Util
 
 		return s;
 	}
+
+	template<typename F, typename ... T>
+	inline bool CompareGroup(F&& first, T&& ... t)
+	{
+		return ((first == t) || ...);
+	}
 }
 
 #define FAILED_TO_HOOK false

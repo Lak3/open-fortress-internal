@@ -11,6 +11,95 @@ public:
 	virtual void		CalcViewIdle(Vector& unk1) = 0;
 
 public:
+	inline void TeamFortress_SetSpeed() {
+		reinterpret_cast<void(__thiscall*)(void*)>(U::Offsets.m_dwC_TFPlayer_TeamFortress_SetSpeed)(this);
+	}
+
+public:
+	//Credits to KGB
+	inline bool InCond(const int iCond)
+	{
+		switch (iCond / 32)
+		{
+		case 0:
+		{
+			const int bit = (1 << iCond);
+			if ((m_nPlayerCond() & bit) == bit)
+				return true;
+
+			break;
+		}
+		case 1:
+		{
+			const int bit = 1 << (iCond - 32);
+			if ((m_nPlayerCondEx() & bit) == bit)
+				return true;
+
+			break;
+		}
+		case 2:
+		{
+			const int bit = 1 << (iCond - 64);
+			if ((m_nPlayerCondEx2() & bit) == bit)
+				return true;
+
+			break;
+		}
+		case 3:
+		{
+			const int bit = 1 << (iCond - 96);
+			if ((m_nPlayerCondEx3() & bit) == bit)
+				return true;
+
+			break;
+		}
+		case 4:
+		{
+			const int bit = 1 << (iCond - 128);
+			if ((m_nPlayerCondEx4() & bit) == bit)
+				return true;
+
+			break;
+		}
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	inline bool InCondUber() {
+		bool v1, v2;
+
+		v1 = InCond(5);
+		v2 = true;
+
+		if (!v1)
+			v2 = InCond(128);
+
+		return v2;
+	}
+
+	inline bool InCondShield() {
+		return InCond(130);
+	}
+
+	inline bool InCondCrit() {
+		if (InCond(11) || InCond(131))
+			return true;
+
+		return InCond(35);
+	}
+
+	inline bool InCondBerserk() {
+		return InCond(129);
+	}
+
+	inline bool InCondHaste() {
+		return InCond(133);
+	}
+
+public:
 	NETVAR(m_bSaveMeParity, bool, "CTFPlayer", "m_bSaveMeParity");
 	NETVAR(m_bChatting, bool, "CTFPlayer", "m_bChatting");
 	NETVAR(m_bRetroMode, bool, "CTFPlayer", "m_bRetroMode");

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Entities/C_TFWeaponBaseGun.h"
+#include "../../Entities/C_WeaponSpawner.h"
 
 #define TXT_DEFAULT		(1 << 0)
 #define TXT_LEFT		(1 << 1)
@@ -14,6 +14,7 @@ enum class EFonts {
 	ESP,
 	ESP_NAME,
 	ESP_WEAPON,
+	PICKUPS,
 	MENU_TAHOMA,
 	MENU_CONSOLAS,
 	MENU_VERDANA,

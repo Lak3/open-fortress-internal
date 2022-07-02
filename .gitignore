@@ -13,3 +13,12 @@
 *.idb
 *.dll
 *.ilk
+*.ipdb
+*.iobj
+*.iobj
+*.ipdb
+*.exe
+*.iobj
+*.ipdb
+Release/of.ipdb
+Release/of.iobj

@@ -2,6 +2,8 @@
 
 #include "Helpers/Helpers.h"
 
+namespace I { inline void* TFGameMovement = nullptr; }
+
 namespace Util
 {
 	inline Color GetHealthColor(const int nHealth, const int nMaxHealth)

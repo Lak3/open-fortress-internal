@@ -1,6 +1,7 @@
 #include "../Hooks.h"
 
 #include "../../Features/EnginePrediction/EnginePrediction.h"
+#include "../../Features/Nospread/Nospread.h"
 
 DEFINE_HOOK(ClientModeShared_CreateMove, bool, __fastcall, void* ecx, void* edx, float input_sample_frametime, CUserCmd* cmd)
 {
@@ -11,6 +12,7 @@ DEFINE_HOOK(ClientModeShared_CreateMove, bool, __fastcall, void* ecx, void* edx,
 	{
 		//AIMPOT();
 		//TRIGGERPOT();
+		F::Nospread.Think(cmd);
 	}
 	F::EnginePrediction.Finish();
 

@@ -1,5 +1,6 @@
 #include "Hash.h"
 
+//Slooooow
 int CUtil_Hash::String(const char* szOrg)
 {
 	int iHash = 5381;

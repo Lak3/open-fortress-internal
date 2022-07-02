@@ -10,7 +10,11 @@ void CFeatures_EnginePrediction::Start(CUserCmd* cmd)
 	if (!pLocal)
 		return;
 
+	cmd->random_seed = (MD5_PseudoRandom(cmd->command_number) & INT_MAX);
+
 	pLocal->SetCurrentCommand(cmd);
+	C_BaseEntity::SetPredictionRandomSeed(cmd);
+	C_BaseEntity::SetPredictionPlayer(pLocal);
 
 	m_fOldCurrentTime = I::GlobalVarsBase->curtime;
 	m_fOldFrameTime   = I::GlobalVarsBase->frametime;
@@ -28,6 +32,24 @@ void CFeatures_EnginePrediction::Start(CUserCmd* cmd)
 
 	I::Prediction->m_bFirstTimePredicted = false;
 	I::Prediction->m_bInPrediction       = true;
+
+	I::GameMovement->StartTrackPredictionErrors(pLocal);
+
+	if (cmd->weaponselect != 0)
+	{
+		C_BaseCombatWeapon* pWeapon = dynamic_cast<C_BaseCombatWeapon*>(C_BaseEntity::Instance(cmd->weaponselect));
+
+		if (pWeapon)
+			pLocal->SelectItem(pWeapon->GetName(), cmd->weaponsubtype);
+	}
+
+	if (cmd->impulse)
+	{
+		if (!pLocal->GetClientVehicle() || pLocal->UsingStandardWeaponsInVehicle())
+			pLocal->m_nImpulse() = cmd->impulse;
+	}
+
+	pLocal->UpdateButtonState(cmd->buttons);
 
 	I::Prediction->SetLocalViewAngles(cmd->viewangles);
 
@@ -51,11 +73,15 @@ void CFeatures_EnginePrediction::Finish()
 	if (!pLocal)
 		return;
 
+	I::GameMovement->FinishTrackPredictionErrors(pLocal);
+
 	I::GlobalVarsBase->curtime   = m_fOldCurrentTime;
 	I::GlobalVarsBase->frametime = m_fOldFrameTime;
 	I::GlobalVarsBase->tickcount = m_nOldTickCount;
 
 	pLocal->SetCurrentCommand(nullptr);
+	C_BaseEntity::SetPredictionRandomSeed(nullptr);
+	C_BaseEntity::SetPredictionPlayer(nullptr);
 }
 
 int CFeatures_EnginePrediction::GetTickbase(C_TFPlayer* pLocal, CUserCmd* cmd)

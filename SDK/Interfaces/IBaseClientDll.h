@@ -12,6 +12,7 @@ class IFileList;
 class CRenamedRecvTableInfo;
 class CMouthInfo;
 class IConVar;
+class INetChannel;
 
 enum ClientFrameStage_t
 {
@@ -108,3 +109,14 @@ public:
 };
 
 namespace I { inline IBaseClientDLL* BaseClientDLL = nullptr; }
+
+class CClientState
+{
+private:
+	char __pad00[16];
+
+public:
+	INetChannel* m_pNetChannel;
+};
+
+namespace I { inline CClientState* ClientState = nullptr; }

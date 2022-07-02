@@ -152,15 +152,19 @@
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="Entry\Entry.cpp" />
+    <ClCompile Include="Features\Aimbot\AimbotProjectile\MovementSimulation\MovementSimulation.cpp" />
     <ClCompile Include="Features\EnginePrediction\EnginePrediction.cpp" />
     <ClCompile Include="Features\ESP\ESP.cpp" />
+    <ClCompile Include="Features\Nospread\Nospread.cpp" />
     <ClCompile Include="Features\Vars.cpp" />
     <ClCompile Include="Hooks\Definitions\ClientModeShared_CreateMove.cpp" />
     <ClCompile Include="Hooks\Definitions\CNetChan_Shutdown.cpp" />
     <ClCompile Include="Hooks\Definitions\CPrediction_RunCommand.cpp" />
     <ClCompile Include="Hooks\Definitions\CTFDiscordRPC_LevelInit.cpp" />
     <ClCompile Include="Hooks\Definitions\CTFDiscordRPC_Reset.cpp" />
+    <ClCompile Include="Hooks\Definitions\CTFGameMovement_ProcessMovement.cpp" />
     <ClCompile Include="Hooks\Definitions\IBaseClientDLL_FrameStageNotify.cpp" />
+    <ClCompile Include="Hooks\Definitions\IBaseClientDLL_LevelInitPostEntity.cpp" />
     <ClCompile Include="Hooks\Definitions\IBaseClientDLL_LevelShutdown.cpp" />
     <ClCompile Include="Hooks\Definitions\IEngineVGui_Paint.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
@@ -186,8 +190,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entry\Entry.h" />
+    <ClInclude Include="Features\Aimbot\AimbotProjectile\MovementSimulation\MovementSimulation.h" />
     <ClInclude Include="Features\EnginePrediction\EnginePrediction.h" />
     <ClInclude Include="Features\ESP\ESP.h" />
+    <ClInclude Include="Features\Nospread\Nospread.h" />
     <ClInclude Include="Features\Vars.h" />
     <ClInclude Include="Hooks\Hooks.h" />
     <ClInclude Include="SDK\Entities\C_BaseAnimating.h" />
@@ -201,6 +207,7 @@
     <ClInclude Include="SDK\Entities\C_TFPlayer.h" />
     <ClInclude Include="SDK\Entities\C_TFWeaponBase.h" />
     <ClInclude Include="SDK\Entities\C_TFWeaponBaseGun.h" />
+    <ClInclude Include="SDK\Entities\C_WeaponSpawner.h" />
     <ClInclude Include="SDK\Entities\IClientEntity.h" />
     <ClInclude Include="SDK\Entities\IClientNetworkable.h" />
     <ClInclude Include="SDK\Entities\IClientRenderable.h" />

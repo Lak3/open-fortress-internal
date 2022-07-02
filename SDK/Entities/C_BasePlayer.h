@@ -98,6 +98,18 @@ public:
 		*reinterpret_cast<CUserCmd**>(reinterpret_cast<DWORD>(this) + s_nOff) = cmd;
 	}
 
+	inline void UpdateButtonState(const int nUserCmdButtonMask) {
+		reinterpret_cast<void(__thiscall*)(void*, int)>(U::Offsets.m_dwC_BasePlayer_UpdateButtonState)(this, nUserCmdButtonMask);
+	}
+
+	inline bool UsingStandardWeaponsInVehicle() {
+		return reinterpret_cast<bool(__thiscall*)(void*)>(U::Offsets.m_dwC_BasePlayer_UsingStandardWeaponsInVehicle)(this);
+	}
+
+	inline int& m_nImpulse() {
+		return *reinterpret_cast<int*>(this + 0x11DC); //Another hardcoded mf
+	}
+
 public:
 	NETVAR(m_Local, void*, "CBasePlayer", "m_Local");
 	NETVAR(m_chAreaBits, void*, "CBasePlayer", "m_chAreaBits");
@@ -148,10 +160,10 @@ public:
 	NETVAR(m_nTickBase, int, "CBasePlayer", "m_nTickBase");
 	NETVAR(m_nNextThinkTick, int, "CBasePlayer", "m_nNextThinkTick");
 	NETVAR(m_hLastWeapon, int, "CBasePlayer", "m_hLastWeapon");
-	NETVAR(m_hGroundEntity, int, "CBasePlayer", "m_hGroundEntity");
+	NETVAR(m_hGroundEntity, EHANDLE, "CBasePlayer", "m_hGroundEntity");
 	NETVAR(m_vecVelocity, Vector, "CBasePlayer", "m_vecVelocity[0]");
 	NETVAR(m_vecBaseVelocity, Vector, "CBasePlayer", "m_vecBaseVelocity");
-	NETVAR(m_hConstraintEntity, int, "CBasePlayer", "m_hConstraintEntity");
+	NETVAR(m_hConstraintEntity, EHANDLE, "CBasePlayer", "m_hConstraintEntity");
 	NETVAR(m_vecConstraintCenter, Vector, "CBasePlayer", "m_vecConstraintCenter");
 	NETVAR(m_flConstraintRadius, float, "CBasePlayer", "m_flConstraintRadius");
 	NETVAR(m_flConstraintWidth, float, "CBasePlayer", "m_flConstraintWidth");

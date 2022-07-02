@@ -34,6 +34,10 @@
     <ClCompile Include="Features\EnginePrediction\EnginePrediction.cpp" />
     <ClCompile Include="Hooks\Definitions\CPrediction_RunCommand.cpp" />
     <ClCompile Include="Hooks\Definitions\CNetChan_Shutdown.cpp" />
+    <ClCompile Include="Hooks\Definitions\IBaseClientDLL_LevelInitPostEntity.cpp" />
+    <ClCompile Include="Features\Aimbot\AimbotProjectile\MovementSimulation\MovementSimulation.cpp" />
+    <ClCompile Include="Hooks\Definitions\CTFGameMovement_ProcessMovement.cpp" />
+    <ClCompile Include="Features\Nospread\Nospread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util\Util.h" />
@@ -123,6 +127,9 @@
     <ClInclude Include="SDK\Interfaces\IPrediction.h" />
     <ClInclude Include="SDK\Interfaces\GameMovement.h" />
     <ClInclude Include="SDK\Interfaces\IMoveHelper.h" />
+    <ClInclude Include="SDK\Entities\C_WeaponSpawner.h" />
+    <ClInclude Include="Features\Aimbot\AimbotProjectile\MovementSimulation\MovementSimulation.h" />
+    <ClInclude Include="Features\Nospread\Nospread.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SDK\Includes\gametrace.h" />

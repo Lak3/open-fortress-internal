@@ -3,6 +3,12 @@
 #include "C_BaseSchemaEntity.h"
 
 class CHudTexture;
+class FileWeaponInfo_t;
+
+#define MAX_SHOOT_SOUNDS 16
+#define MAX_WEAPON_STRING 80
+#define MAX_WEAPON_PREFIX 16
+#define MAX_WEAPON_AMMO_NAME 32
 
 class C_BaseCombatWeapon : public C_BaseSchemaEntity
 {
@@ -178,6 +184,11 @@ private:
 	virtual void*				NetworkStateChanged_m_nNextThinkTick(void* unk1) = 0;
 
 public:
+	inline const FileWeaponInfo_t& GetWpnData() {
+		return reinterpret_cast<const FileWeaponInfo_t & (__thiscall*)(void*)>(U::Offsets.m_dwC_BaseCombatWeapon_GetWpnData)(this);
+	}
+
+public:
 	NETVAR(m_iClip1, int, "CBaseCombatWeapon", "m_iClip1");
 	NETVAR(m_iClip2, int, "CBaseCombatWeapon", "m_iClip2");
 	NETVAR(m_iReserveAmmo, int, "CBaseCombatWeapon", "m_iReserveAmmo");
@@ -193,4 +204,50 @@ public:
 	NETVAR(m_iWorldModelIndex, int, "CBaseCombatWeapon", "m_iWorldModelIndex");
 	NETVAR(m_iState, int, "CBaseCombatWeapon", "m_iState");
 	NETVAR(m_hOwner, int, "CBaseCombatWeapon", "m_hOwner");
+};
+
+//TODO: Untested, verify the integrity of this.
+class FileWeaponInfo_t
+{
+public:
+	virtual void Parse(KeyValues* pKeyValuesData, const char* szWeaponName) = 0;
+
+public:
+	bool					bParsedScript;
+	bool					bLoadedHudElements;
+	char					szClassName[MAX_WEAPON_STRING];
+	char					szPrintName[MAX_WEAPON_STRING];			// Name for showing in HUD, etc.
+	char					szViewModel[MAX_WEAPON_STRING];			// View model of this weapon
+	char					szWorldModel[MAX_WEAPON_STRING];		// Model of this weapon seen carried by the player
+	char					szAnimationPrefix[MAX_WEAPON_PREFIX];	// Prefix of the animations that should be used by the player carrying this weapon
+	int						iSlot;									// inventory slot.
+	int						iPosition;								// position in the inventory slot.
+	int						iMaxClip1;								// max primary clip size (-1 if no clip)
+	int						iMaxClip2;								// max secondary clip size (-1 if no clip)
+	int						iDefaultClip1;							// amount of primary ammo in the gun when it's created
+	int						iDefaultClip2;							// amount of secondary ammo in the gun when it's created
+	int						iWeight;								// this value used to determine this weapon's importance in autoselection.
+	int						iRumbleEffect;							// Which rumble effect to use when fired? (xbox)
+	bool					bAutoSwitchTo;							// whether this weapon should be considered for autoswitching to
+	bool					bAutoSwitchFrom;						// whether this weapon can be autoswitched away from when picking up another weapon or ammo
+	int						iFlags;									// miscellaneous weapon flags
+	char					szAmmo1[MAX_WEAPON_AMMO_NAME];			// "primary" ammo type
+	char					szAmmo2[MAX_WEAPON_AMMO_NAME];			// "secondary" ammo type
+	char					aShootSounds[NUM_SHOOT_SOUND_TYPES][MAX_WEAPON_STRING];
+	int						iAmmoType;
+	int						iAmmo2Type;
+	bool					m_bMeleeWeapon;
+	bool					m_bBuiltRightHanded;
+	bool					m_bAllowFlipping;
+	int						iSpriteCount;
+	CHudTexture*            iconActive;
+	CHudTexture*			iconInactive;
+	CHudTexture*			iconAmmo;
+	CHudTexture*			iconAmmo2;
+	CHudTexture*			iconCrosshair;
+	CHudTexture*			iconAutoaim;
+	CHudTexture*			iconZoomedCrosshair;
+	CHudTexture*			iconZoomedAutoaim;
+	CHudTexture*			iconSmall;
+	bool					bShowUsageHint;
 };

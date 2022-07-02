@@ -29,6 +29,9 @@ void CGlobal_Entry::Load()
 
 			I::GlobalVarsBase = *reinterpret_cast<CGlobalVarsBase**>(U::Offsets.m_dwGlobalVars + 0x8);
 			XASSERT(I::GlobalVarsBase == nullptr);
+
+			I::ClientState = *reinterpret_cast<CClientState**>(U::Offsets.m_dwClientState + 0x1);
+			XASSERT(I::ClientState == nullptr);
 		}
 	}
 
